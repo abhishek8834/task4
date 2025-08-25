@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Portfolio | ApexPlanet</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <nav>
+      <h1>My Portfolio</h1>
+      <ul id="navbar">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#todo">To-Do App</a></li>
+        <li><a href="#products">Products</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- About -->
+  <section id="about">
+    <h2>About Me</h2>
+    <p>Hello, I'm Abhishek. A passionate developer learning full-stack development at ApexPlanet Software Pvt Ltd.</p>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <h2>Projects</h2>
+    <div class="card">
+      <h3>To-Do App</h3>
+      <p>A simple note-taking app with local storage.</p>
+    </div>
+    <div class="card">
+      <h3>Product Page</h3>
+      <p>Interactive product listing with filters & sorting.</p>
+    </div>
+  </section>
+
+  <!-- To-Do App -->
+  <section id="todo">
+    <h2>To-Do List</h2>
+    <input type="text" id="taskInput" placeholder="Enter a task">
+    <button onclick="addTask()">Add</button>
+    <ul id="taskList"></ul>
+  </section>
+
+  <!-- Product Listing -->
+  <section id="products">
+    <h2>Product Listing</h2>
+    <div class="filters">
+      <select id="categoryFilter" onchange="applyFilters()">
+        <option value="all">All Categories</option>
+        <option value="electronics">Electronics</option>
+        <option value="clothing">Clothing</option>
+      </select>
+
+      <select id="sortBy" onchange="applyFilters()">
+        <option value="default">Sort By</option>
+        <option value="price">Price</option>
+        <option value="rating">Rating</option>
+      </select>
+    </div>
+    <div id="productList"></div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <h2>Contact</h2>
+    <form id="contactForm">
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <textarea placeholder="Message"></textarea>
+      <button type="submit">Send</button>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 ApexPlanet Software Pvt Ltd</p>
+  </footer>
+
+  <!-- Scroll to Top -->
+  <button id="scrollTopBtn">↑ Top</button>
+
+  <!-- JavaScript -->
+  <script>
+    // ---------------- To-Do App ----------------
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function renderTasks(){
+      document.getElementById("taskList").innerHTML = "";
+      tasks.forEach((task, index) => {
+        let li = document.createElement("li");
+        li.innerHTML = ${task} <button onclick="deleteTask(${index})">X</button>;
+        document.getElementById("taskList").appendChild(li);
+      });
+    }
+
+    function addTask(){
+      let task = document.getElementById("taskInput").value;
+      if(task){
+        tasks.push(task);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        document.getElementById("taskInput").value = "";
+        renderTasks();
+      }
+    }
+
+    function deleteTask(index){
+      tasks.splice(index,1);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    renderTasks();
+
+    // ---------------- Product Listing ----------------
+    let products = [
+      {name:"Laptop", category:"electronics", price:800, rating:4.5},
+      {name:"Shirt", category:"clothing", price:20, rating:4.0},
+      {name:"Headphones", category:"electronics", price:50, rating:4.8},
+      {name:"Jeans", category:"clothing", price:30, rating:3.9}
+    ];
+
+    function renderProducts(items){
+      document.getElementById("productList").innerHTML = "";
+      items.forEach(p=>{
+        let div = document.createElement("div");
+        div.className="product";
+        div.innerHTML = <h3>${p.name}</h3><p>Price: $${p.price}</p><p>Rating: ${p.rating}</p>;
+        document.getElementById("productList").appendChild(div);
+      });
+    }
+
+    function applyFilters(){
+      let category = document.getElementById("categoryFilter").value;
+      let sortBy = document.getElementById("sortBy").value;
+
+      let filtered = products.filter(p => category==="all" || p.category===category);
+
+      if(sortBy==="price"){
+        filtered.sort((a,b)=>a.price-b.price);
+      } else if(sortBy==="rating"){
+        filtered.sort((a,b)=>b.rating-a.rating);
+      }
+
+      renderProducts(filtered);
+    }
+
+    renderProducts(products);
+
+    // ---------------- Extra JavaScript ----------------
+    // Highlight active nav link while scrolling
+    window.addEventListener("scroll", () => {
+      let sections = document.querySelectorAll("section");
+      let navLinks = document.querySelectorAll("#navbar a");
+
+      let current = "";
+      sections.forEach(sec => {
+        let sectionTop = sec.offsetTop - 60;
+        if (pageYOffset >= sectionTop) {
+          current = sec.getAttribute("id");
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove("active");
+        if(link.getAttribute("href") === "#" + current){
+          link.classList.add("active");
+        }
+      });
+    });
+
+    // Contact form alert
+    document.getElementById("contactForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      alert("Thank you! Your message has been submitted.");
+      this.reset();
+    });
+
+    // Scroll to Top button
+    let scrollBtn = document.getElementById("scrollTopBtn");
+    window.onscroll = function(){
+      if(document.body.scrollTop > 200 || document.documentElement.scrollTop > 200){
+        scrollBtn.style.display = "block";
+      } else {
+        scrollBtn.style.display = "none";
+      }
+    };
+
+    scrollBtn.onclick = function(){
+      window.scrollTo({top:0, behavior:"smooth"});
+    };
+  </script>
+</body>
+</html>
